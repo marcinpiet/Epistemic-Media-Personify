@@ -1,14 +1,24 @@
+//code for everyone
 
+(
+//start up code for everyone
+//start the server
+s.boot;
+//level meeter
+s.meter;
+//how many seconds are we listening to?
+~memorySize = 5; //set it to desired value
 //buffer
 ~buffer = Buffer.alloc(s, 48000 * 5);
-~buffer.numFrames;
-~buffer.numChannels;
+//visualise the buffer if there is anything recording
+~plotter = Plotter("live buffer plot");
+);
 
-~buffer.plot;
+/////////////////////////////////////////////////////////////////////////////
+//individual code goes below
 
-
-
-~listener = {
+(
+Ndef(\listener, {
 	arg rate=1;
 
 	//listens to incoming audio
@@ -19,15 +29,13 @@
 
 	//doesn't play anything only listens
     0.0 //quiet
-};
+});
+);
 
-~listener.play;
+Ndef(\listener).play;
 
-
-
-~plotter = Plotter("live buffer plot");
-~plotter
-
+//visualise the recording buffer
+(
 Tdef(\bufferVisualisation, {
 
 	loop{
@@ -35,21 +43,25 @@ Tdef(\bufferVisualisation, {
 		0.01.wait;
 	}
 }).play;
+)
 
 
+(
 Ndef(\resynthesiser, {
 	arg rate=1, inter=2;
 
-	var bufferRead = BufRd.ar(1, ~buffer, Phasor.ar(0, BufRateScale.kr(~buffer) * rate, 0, BufFrames.kr(~buffer)), 1, inter);
+	var bufferRead = BufRd.ar(1, ~buffer, Phasor.ar(0, BufRateScale.kr(~buffer) * rate, 0,BufFrames.kr(~buffer)), 1, inter);
 	var multiply = [bufferRead, bufferRead];
 
 	multiply;
 });
+)
 
 Ndef(\resynthesiser).play;
 Ndef(\resynthesiser).stop;
 
 
+(
 Ndef(\resynthesiser02, {
 	arg rate=1, position, trig = 1;
 
@@ -60,7 +72,9 @@ Ndef(\resynthesiser02, {
 	bufferRead * env;
 
 });
+)
 
+//generate a graphic interface
 Ndef(\resynthesiser02).gui;
 
 Ndef(\resynthesiser02).addSpec(\position, [0, ~buffer.numFrames, \lin] );
@@ -68,6 +82,12 @@ Ndef(\resynthesiser02).addSpec(\trig, [0.001, 1000, \exp] );
 
 Ndef(\resynthesiser02).play;
 Ndef(\resynthesiser).stop;
+
+
+
+
+
+
 
 
 
