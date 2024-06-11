@@ -32,7 +32,6 @@ Ndef(\listener, {
 });
 );
 
-Ndef(\listener).gui;
 Ndef(\listener).play;
 
 //visualise the recording buffer
