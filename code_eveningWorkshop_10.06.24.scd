@@ -12,6 +12,14 @@ s.meter;
 ~buffer = Buffer.alloc(s, 48000 * 5);
 //visualise the buffer if there is anything recording
 ~plotter = Plotter("live buffer plot");
+//plot settings
+~plotter.setProperties(
+    \fontColor, Color.red,
+    \plotColor, Color.red,
+    \backgroundColor, Color.gray,
+    \gridColorX, Color.white
+);
+~plotter.refresh;
 );
 
 /////////////////////////////////////////////////////////////////////////////
