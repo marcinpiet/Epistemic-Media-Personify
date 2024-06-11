@@ -20,6 +20,8 @@ s.waitForBoot({
 		\gridColorX, Color.white
 	);
 	~plotter.refresh;
+	//server window
+	s.makeWindow;
 })
 );
 
@@ -115,7 +117,7 @@ Ndef(\fftMagnitudesSmear, {
 (
 Ndef(\fftMagnitudesSmear).gui;
 Ndef(\fftMagnitudesSmear).addSpec(\smear, [0, 100, \lin]);
-)
+);
 
 
 (
@@ -124,10 +126,8 @@ Ndef(\fftMagnitudesFreez, {
 	var bufferRead = PlayBuf.ar(1, ~buffer, rate, loop: 1);
 	var chain = FFT(LocalBuf(2048), bufferRead);
     // moves in and out of freeze
-    chain = PV_MagFreeze(chain, freez );
-
-	0.5 * IFFT(chain);
-
+    chain = PV_MagFreeze(chain, freeze );
+0.5 * IFFT(chain);
 });
 );
 
@@ -135,7 +135,7 @@ Ndef(\fftMagnitudesFreez, {
 (
 Ndef(\fftMagnitudesFreez).gui;
 Ndef(\fftMagnitudesFreez).addSpec(\freez, [0, 1, \lin]);
-)
+);
 
 (
 Ndef(\fftMagnitudesMultiplication, {
@@ -147,7 +147,7 @@ Ndef(\fftMagnitudesMultiplication, {
     var chainB = FFT(LocalBuf(2048), bufferRead);
     var chain = PV_MagMul(chainA, chainB);
 
-	0.5 * IFFT(chain);
+	Limiter.ar(0.5 * IFFT(chain));
 
 });
 );
@@ -155,7 +155,22 @@ Ndef(\fftMagnitudesMultiplication, {
 //generate a graphic interface with parameters specs
 (
 Ndef(\fftMagnitudesMultiplication).gui;
-)
+);
+
+//granular
+(
+Ndef(\granular, {
+    var trate, dur, clk, pos, pan;
+    trate = 100;
+    dur = 8 / trate;
+    clk = Impulse.kr(trate);
+    pos = Integrator.kr(BrownNoise.kr(0.001));
+    pan = WhiteNoise.kr(0.6);
+    TGrains.ar(2, clk, ~buffer, 1, pos, dur, pan, 0.9);
+});
+);
+
+Ndef(\granular).gui;
 
 
 
