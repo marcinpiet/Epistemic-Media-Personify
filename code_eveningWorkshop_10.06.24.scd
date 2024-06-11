@@ -3,25 +3,25 @@
 (
 //start up code for everyone
 //start the server
-s.boot;
-//level meeter
-s.meter;
-//how many seconds are we listening to?
-~memorySize = 5; //set it to desired value
-//buffer
-~buffer = Buffer.alloc(s, s.sampleRate * ~memorySize);
-//visualise the buffer if there is anything recording
-~plotter = Plotter("live buffer plot");
-//plot settings
-~plotter.setProperties(
-    \fontColor, Color.red,
-    \plotColor, Color.red,
-    \backgroundColor, Color.gray,
-    \gridColorX, Color.white
+s.waitForBoot({
+	//level meeter
+	s.meter;
+	//how many seconds are we listening to?
+	~memorySize = 60; //set it to desired value
+	//buffer
+	~buffer = Buffer.alloc(s, s.sampleRate * ~memorySize);
+	//visualise the buffer if there is anything recording
+	~plotter = Plotter("live buffer plot");
+	//plot settings
+	~plotter.setProperties(
+		\fontColor, Color.red,
+		\plotColor, Color.red,
+		\backgroundColor, Color.gray,
+		\gridColorX, Color.white
+	);
+	~plotter.refresh;
+})
 );
-~plotter.refresh;
-);
-
 /////////////////////////////////////////////////////////////////////////////
 //individual code goes below
 
