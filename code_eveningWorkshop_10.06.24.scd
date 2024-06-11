@@ -7,7 +7,7 @@ s.waitForBoot({
 	//level meeter
 	s.meter;
 	//how many seconds are we listening to?
-	~memorySize = 60; //set it to desired value
+	~memorySize = 12; //set it to desired value
 	//buffer
 	~buffer = Buffer.alloc(s, s.sampleRate * ~memorySize);
 	//visualise the buffer if there is anything recording
@@ -22,6 +22,7 @@ s.waitForBoot({
 	~plotter.refresh;
 })
 );
+
 /////////////////////////////////////////////////////////////////////////////
 //individual code goes below
 
@@ -33,68 +34,44 @@ Ndef(\listener, {
     var in = SoundIn.ar(0);
 
 	//writes into a buffer
-	BufWr.ar(in, ~buffer, Phasor.ar(0, BufRateScale.kr(~buffer) * rate, 0, BufFrames.kr(~buffer)));
+	BufWr.ar(in, ~buffer, Phasor.ar(0, BufRateScale.kr(~buffer) * rate, 0, BufFrames.kr(~buffer)), loop: 0);
 
 	//doesn't play anything only listens
     0.0 //quiet
 });
 );
 
-Ndef(\listener).play;
-
-//visualise the recording buffer
+//listen and record for given length of time, time set above as ~memorySize
+//display the recorded buffer
 (
+Tdef(\record, { 1.do{
+	Ndef(\listener).play; Tdef(\bufferVisualisation).play; "recording".postln;
+	~memorySize.wait;
+	Ndef(\listener).free; Tdef(\bufferVisualisation).stop; "recording stopped".postln
+} } );
+//visualise the recording buffer
 Tdef(\bufferVisualisation, {
-
 	loop{
 		~buffer.getToFloatArray(wait:0.01,action:{arg array; { ~plotter.value = array; }.defer;});
 		0.01.wait;
 	}
-}).play;
-)
-
-
-(
-Ndef(\resynthesiser, {
-	arg rate=1, inter=2;
-
-	var bufferRead = BufRd.ar(1, ~buffer, Phasor.ar(0, BufRateScale.kr(~buffer) * rate, 0,BufFrames.kr(~buffer)), 1, inter);
-	var multiply = [bufferRead, bufferRead];
-
-	multiply;
 });
-)
+Tdef(\record).play;
+);
 
-Ndef(\resynthesiser).play;
-Ndef(\resynthesiser).stop;
-
-
+//replay what recorded
 (
-Ndef(\resynthesiser02, {
-	arg rate=1, position, trig = 1;
+Ndef(\rePlay, {
+	arg rate=1;
+	var bufferRead = PlayBuf.ar(1, ~buffer, rate, startPos: position, loop: 1);
 
-	var trigger = Impulse.ar(trig);
-	var bufferRead = PlayBuf.ar(1, ~buffer, rate, trigger: trigger, startPos: position, loop: 1);
-	var env = EnvGen.kr(Env.linen(), gate: trigger);
-
-	bufferRead * env;
+	bufferRead;
 
 });
-)
+);
 
 //generate a graphic interface
-Ndef(\resynthesiser02).gui;
-
-Ndef(\resynthesiser02).addSpec(\position, [0, ~buffer.numFrames, \lin] );
-Ndef(\resynthesiser02).addSpec(\trig, [0.001, 1000, \exp] );
-
-Ndef(\resynthesiser02).play;
-Ndef(\resynthesiser).stop;
-
-
-
-
-
+Ndef(\rePlay).gui;
 
 
 
