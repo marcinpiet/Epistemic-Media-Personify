@@ -91,10 +91,12 @@ Ndef(\fftBinScrambler, {
 );
 
 //generate a graphic interface with parameters specs
+(
 Ndef(\fftBinScrambler).gui;
 Ndef(\fftBinScrambler).addSpec(\wipe, [0, 1, \lin]);
 Ndef(\fftBinScrambler).addSpec(\width, [0, 1, \lin]);
 Ndef(\fftBinScrambler).addSpec(\pulseRate, [1, 1000, \lin]);
+)
 
 (
 Ndef(\fftMagnitudesSmear, {
@@ -115,6 +117,45 @@ Ndef(\fftMagnitudesSmear).gui;
 Ndef(\fftMagnitudesSmear).addSpec(\smear, [0, 100, \lin]);
 )
 
+
+(
+Ndef(\fftMagnitudesFreez, {
+	arg rate=1, freez = 0;
+	var bufferRead = PlayBuf.ar(1, ~buffer, rate, loop: 1);
+	var chain = FFT(LocalBuf(2048), bufferRead);
+    // moves in and out of freeze
+    chain = PV_MagFreeze(chain, freez );
+
+	0.5 * IFFT(chain);
+
+});
+);
+
+//generate a graphic interface with parameters specs
+(
+Ndef(\fftMagnitudesFreez).gui;
+Ndef(\fftMagnitudesFreez).addSpec(\freez, [0, 1, \lin]);
+)
+
+(
+Ndef(\fftMagnitudesMultiplication, {
+	arg rate=1;
+	//oscillator bank as a source
+	var inA = Klang.ar(`[ [200, 1000, 3200], [0.1, 0.5, 0.3], [pi, pi, pi]], 1, 0) * 0.9;
+	var bufferRead = PlayBuf.ar(1, ~buffer, rate, loop: 1);
+	var chainA = FFT(LocalBuf(2048), inA);
+    var chainB = FFT(LocalBuf(2048), bufferRead);
+    var chain = PV_MagMul(chainA, chainB);
+
+	0.5 * IFFT(chain);
+
+});
+);
+
+//generate a graphic interface with parameters specs
+(
+Ndef(\fftMagnitudesMultiplication).gui;
+)
 
 
 
