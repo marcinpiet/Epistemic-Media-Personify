@@ -9,7 +9,7 @@ s.meter;
 //how many seconds are we listening to?
 ~memorySize = 5; //set it to desired value
 //buffer
-~buffer = Buffer.alloc(s, 48000 * ~memorySize);
+~buffer = Buffer.alloc(s, s.sampleRate * ~memorySize);
 //visualise the buffer if there is anything recording
 ~plotter = Plotter("live buffer plot");
 //plot settings
