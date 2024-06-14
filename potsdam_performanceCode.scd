@@ -24,6 +24,10 @@ s.waitForBoot({
 	Tdef(\record, {
 		//we are running the process once for given duration
 		1.do{
+			~buffer.free;
+			0.1.wait;
+			~buffer = Buffer.alloc(s, s.sampleRate * ~memorySize);
+
 			//listener is defined here, it's hacky
 		Ndef(\listener, {arg rate=1;
 			//listens to incoming audio
