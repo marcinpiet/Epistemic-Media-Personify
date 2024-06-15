@@ -73,18 +73,7 @@ s.waitForBoot({
 		var st = button.value; st.postln;
 		switch(st,
 			0, {},
-			1, {Tdef(\record).play; 
-				Routine({
-    var i = 0;
-    while({ i < ((~cycleLength * 60)+2) }, {
-        i.postln; // gibt die Zahlen von 0 bis 9 aus
-        i = i + 1;
-        1.wait; // wartet 1 Sekunde
-		if (i > (~cycleLength*60)) {
-			Ndef.clear;
-        }
-    });
-}).play;}
+			1, {Tdef(\record).play;}
 		)
 	};
 	p = Plotter("live buffer monitor", Rect(5, 50, 290, 200), w);
@@ -97,7 +86,19 @@ s.waitForBoot({
 });
 );
 
-Server.killAll
+(
+Routine({
+    var i = 0;
+    while({ i < ((~cycleLength * 60)+2) }, {
+        i.postln; // gibt die Zahlen von 0 bis 9 aus
+        i = i + 1;
+        1.wait; // wartet 1 Sekunde
+		if (i > (~cycleLength*60)) {
+			Ndef.clear;
+        }
+    });
+}).play;
+)
 
 
 /////////////////////////////////////////////////////////////////////////////
