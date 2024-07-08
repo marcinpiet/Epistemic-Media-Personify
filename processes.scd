@@ -15,7 +15,7 @@ Ndef(\fftBinScrambler, {
 
 });
 //generate a graphic interface with parameters specs
-//Ndef(\fftBinScrambler).gui;
+Ndef(\fftBinScrambler).gui;
 Ndef(\fftBinScrambler).addSpec(\wipe, [0, 1, \lin]);
 Ndef(\fftBinScrambler).addSpec(\width, [0, 1, \lin]);
 Ndef(\fftBinScrambler).addSpec(\pulseRate, [1, 1000, \lin]);
@@ -34,7 +34,7 @@ Ndef(\fftMagnitudesSmear, {
 
 });
 //generate a graphic interface with parameters specs
-//Ndef(\fftMagnitudesSmear).gui;
+Ndef(\fftMagnitudesSmear).gui;
 Ndef(\fftMagnitudesSmear).addSpec(\smear, [0, 100, \lin]);
 Ndef(\fftMagnitudesSmear).addSpec(\volMax, [0.5, 5, \lin]);
 );
@@ -54,7 +54,7 @@ Ndef(\fftMagnitudesFreez, {
 
 });
 //generate a graphic interface with parameters specs
-//Ndef(\fftMagnitudesFreez).gui;
+Ndef(\fftMagnitudesFreez).gui;
 Ndef(\fftMagnitudesFreez).addSpec(\freez, [0, 1, \lin]);
 Ndef(\fftMagnitudesFreez).addSpec(\volMax, [0.5, 5, \lin]);
 );
@@ -75,7 +75,7 @@ Ndef(\fftMagnitudesMultiplication, {
 
 });
 //generate a graphic interface with parameters specs
-//Ndef(\fftMagnitudesMultiplication).gui;
+Ndef(\fftMagnitudesMultiplication).gui;
 Ndef(\fftMagnitudesMultiplication).addSpec(\volMax, [0.5, 5, \lin]);
 );
 
@@ -89,7 +89,7 @@ Ndef(\granular, {
 	pan = WhiteNoise.kr(0.6);
 	TGrains.ar(2, clk, ~buffer, 1, pos, grDur, pan, 0.9 * volMax);
 });
-//Ndef(\granular).gui;
+Ndef(\granular).gui;
 Ndef(\granular).addSpec(\volMax, [0.5, 5, \lin]);
 Ndef(\granular).addSpec(\pos, [0, ~buffer.duration, \lin]);
 Ndef(\granular).addSpec(\tRate, [1, 1000, \exp]);
@@ -97,20 +97,16 @@ Ndef(\granular).addSpec(\grDur, [0.01, 1, \lin]);
 );
 
 (
-Ndef(\filter, {
-	arg freq, rq, pan, amp;
-	var filter = BPF.ar(\input.ar, freq, rq);
-	var panning = Pan2.ar(filter, pan, amp);
-	panning;
+Ndef(\delay, {|maxDelay = 5, delayTime = 1, decayT = 1|
+	var rawInput = \input.ar;
+	var delay = CombC.ar(rawInput, maxDelay, delayTime, decayT);
+
+	[delay, rawInput];
 });
-);
-
-(
-Ndef(\delay, {|maxdelaytime = 5, delaytime = 1|
-	var delay = DelayC.ar(\input.ar, maxdelaytime, delaytime);
-
-	[delay, \input.ar];
-})
+Ndef(\delay).gui;
+Ndef(\delay).addSpec(\maxDelay, [0.1, 20, \lin]);
+Ndef(\delay).addSpec(\delayTime, [0.0, 20, \lin]);
+Ndef(\delay).addSpec(\decayT, [0.0, 20, \lin]);
 )
 
 
